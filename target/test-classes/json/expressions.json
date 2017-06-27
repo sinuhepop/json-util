@@ -1,0 +1,23 @@
+{
+	"model": {
+		"obj": [
+			"a",
+			{
+				"b": "xxx"
+			},
+			[
+				"c"
+			]
+		],
+		"peix": 3.323
+	},
+	"expressions": {
+		"equals": {
+			"a": "#{model['obj'][0]}",
+			"xxx": "#{model['obj'][1]['b']}",
+			"c": "#{model['obj'][2][0]}"
+		},
+		"of-object": "#{model['obj']}",
+		"peix": null
+	}
+}
