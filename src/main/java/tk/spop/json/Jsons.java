@@ -6,11 +6,17 @@ import java.util.Properties;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonString;
 import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
 
 import lombok.val;
+import lombok.experimental.UtilityClass;
 import tk.spop.json.common.MapBuilder;
+import tk.spop.json.util.Holder;
+import tk.spop.json.util.StreamUtils;
 
+@UtilityClass
 public class Jsons {
 
 	public static Map<String, Object> toMap(JsonObject object) {
@@ -23,16 +29,35 @@ public class Jsons {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T toJavaObject(JsonValue value) {
-		Object[] result = new Object[1];
-		val ctx = new MapBuilder.Context(x -> result[0] = x);
+		Holder<T> holder = Holder.empty();
+		val ctx = new MapBuilder.Context(x -> holder.setValue((T) x));
 		new MapBuilder().visitValue(ctx, value);
-		return (T) result[0];
+		return holder.get();
 	}
 
 	public static Properties toProperties(JsonObject object) {
 		val p = new Properties();
-		p.setProperty(key, value);
-
+		toProperties(p, "", object);
 		return p;
+	}
+
+	private static void toProperties(Properties p, String path, JsonValue json) {
+
+		if (json.getValueType() == ValueType.OBJECT) {
+			val prefix = path.isEmpty() ? "" : path + '.';
+			json.asJsonObject().forEach((k, v) -> toProperties(p, prefix + k, v));
+
+		} else if (json.getValueType() == ValueType.ARRAY) {
+			json.asJsonArray().stream() //
+					.map(StreamUtils.zipWithIndex()) //
+					.forEach(x -> toProperties(p, path + '[' + x.getIndex() + ']', x.getValue()));
+
+		} else if (json.getValueType() != ValueType.NULL) {
+			if (json instanceof JsonString) {
+				p.setProperty(path, ((JsonString) json).getString());
+			} else {
+				p.setProperty(path, json.toString());
+			}
+		}
 	}
 }

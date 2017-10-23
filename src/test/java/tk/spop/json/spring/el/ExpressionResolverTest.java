@@ -3,6 +3,7 @@ package tk.spop.json.spring.el;
 import org.junit.Test;
 
 import lombok.val;
+import tk.spop.json.TestUtils;
 
 public class ExpressionResolverTest {
 
