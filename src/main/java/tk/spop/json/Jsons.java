@@ -29,10 +29,10 @@ public class Jsons {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T toJavaObject(JsonValue value) {
-		Holder<T> holder = Holder.empty();
-		val ctx = new MapBuilder.Context(x -> holder.setValue((T) x));
+		Holder<Object> holder = Holder.empty();
+		val ctx = new MapBuilder.Context(holder);
 		new MapBuilder().visitValue(ctx, value);
-		return holder.get();
+		return (T) holder.get();
 	}
 
 	public static Properties toProperties(JsonObject object) {

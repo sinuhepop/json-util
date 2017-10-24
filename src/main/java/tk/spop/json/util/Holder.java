@@ -4,17 +4,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
+import lombok.EqualsAndHashCode;
 
-@Data
-@Accessors(chain = true)
+@EqualsAndHashCode
 public class Holder<T> implements Supplier<T>, Consumer<T> {
 
 	private T value;
 
 	public static <X> Holder<X> of(X value) {
-		return new Holder<X>().setValue(value);
+		return new Holder<X>().set(value);
 	}
 
 	public static <X> Holder<X> ofType(Class<X> type) {
@@ -25,22 +23,32 @@ public class Holder<T> implements Supplier<T>, Consumer<T> {
 		return new Holder<>();
 	}
 
-	@Override
-	public void accept(T t) {
-		setValue(t);
+	public Holder<T> set(T value) {
+		this.value = value;
+		return this;
 	}
 
 	@Override
 	public T get() {
-		return getValue();
+		return value;
+	}
+
+	@Override
+	public void accept(T t) {
+		set(t);
 	}
 
 	public Holder<T> replace(Function<T, T> function) {
-		return setValue(function.apply(getValue()));
+		return set(function.apply(get()));
 	}
 
 	public <S> Holder<S> map(Function<T, S> function) {
-		return of(function.apply(getValue()));
+		return of(function.apply(get()));
+	}
+
+	@Override
+	public String toString() {
+		return "<" + value + ">";
 	}
 
 }

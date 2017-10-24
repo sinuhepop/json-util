@@ -5,7 +5,10 @@
 			"b"
 		],
 		"peix": 3.323,
-		"ou": null
+		"ou": {
+			"existing": true,
+			"missing": null
+		}
 	},
 	{
 		"vaca|+": "c",

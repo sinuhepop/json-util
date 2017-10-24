@@ -1,6 +1,5 @@
 package tk.spop.json.util;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import lombok.Data;
@@ -12,13 +11,22 @@ public class StreamUtils {
 
 	@Data
 	public static class ValueWithIndex<T> {
+
 		private final int index;
 		private final T value;
+
+		public <S> ValueWithIndex<S> withValue(S value) {
+			return new ValueWithIndex<>(index, value);
+		}
 	}
 
 	public static <T> Function<T, ValueWithIndex<T>> zipWithIndex() {
-		val counter = new AtomicInteger(0);
-		return x -> new ValueWithIndex<T>(counter.getAndIncrement(), x);
+		val counter = Holder.of(0);
+		return x -> {
+			val current = counter.get();
+			counter.set(current + 1);
+			return new ValueWithIndex<>(current, x);
+		};
 	}
 
 }
